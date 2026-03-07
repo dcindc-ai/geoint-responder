@@ -7,9 +7,6 @@ export default async function handler(req, res) {
   }
 
   const { system, userMessage } = req.body;
-  if (!system || !userMessage) {
-    return res.status(400).json({ error: "Missing system or userMessage in request body." });
-  }
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -30,8 +27,9 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({
-        error: `Anthropic API error: ${data.error?.message || JSON.stringify(data)}`
+      return res.status(200).json({
+        text: "",
+        error: `Anthropic returned ${response.status}: ${JSON.stringify(data)}`
       });
     }
 
@@ -39,6 +37,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ text });
 
   } catch (err) {
-    return res.status(500).json({ error: `Server error: ${err.message}` });
+    return res.status(200).json({ error: `Server error: ${err.message}` });
   }
 }
