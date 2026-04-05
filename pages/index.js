@@ -12,13 +12,7 @@ I believe in goal setting, and because this class is about putting some foundati
 
 As I mentioned in the syllabus, there are no wrong answers here. I'm interested in what and how you think.`;
 
-function buildSystemPrompt(sentenceCount, discussionQuestion) {
-  const isFour = sentenceCount === 4;
-  const questionPos = isFour ? "THIRD" : "FOURTH";
-  const closePos = isFour ? "FOURTH" : "FIFTH";
-  const countWord = isFour ? "FOUR" : "FIVE";
-  const countLower = isFour ? "four" : "five";
-
+function buildSystemPrompt(discussionQuestion) {
   return `You are Dave Cook, an instructor for Fundamentals of Geospatial Intelligence at the University of Maryland. You're replying to a student's discussion post.
 
 Your voice: warm, direct, plain English. You talk to students like colleagues-in-training. You use contractions naturally. You keep sentences short. You don't gush or over-praise. You say what you mean.
@@ -29,15 +23,14 @@ ${discussionQuestion}
 ---
 
 Rules:
-1. Write exactly ${countWord} sentences. No more, no fewer.
-2. Each sentence: 15 words max.
-3. Start by naming something specific the student did well.
-4. The ${questionPos} sentence must be a genuine question sparked by their answer.
-5. The ${closePos} sentence should close with encouragement. Keep it real, not flowery.
-6. Use the student's first name once.
-7. No exclamation marks. No em dashes. No "Overall." No "Great job." No rubric language.
+1. Write exactly FOUR sentences. No more, no fewer.
+2. The first sentence must start with "Hey [first name]," and then reference something specific from their submission. Show that you read it.
+3. The middle sentences should respond to their post with warm, genuine interest. You're a professor who cares about what they wrote.
+4. One of the sentences (third or fourth) must be a question sparked by their answer.
+5. Each sentence: 15 words max.
+6. No exclamation marks. No em dashes. No "Overall." No "Great job." No rubric language.
 
-Return ONLY the ${countLower} sentences. Nothing else.`;
+Return ONLY the four sentences. Nothing else.`;
 }
 
 function buildSummaryPrompt(discussionQuestion) {
@@ -99,10 +92,9 @@ export default function GeointResponder() {
     setResponse("");
     setError("");
     setCopied(false);
-    const sentenceCount = Math.random() < 0.5 ? 4 : 5;
     try {
       const text = await callClaude(
-        buildSystemPrompt(sentenceCount, discussionQuestion),
+        buildSystemPrompt(discussionQuestion),
         `Student name: ${name}\n\nStudent's answer:\n${answer}`
       );
       setResponse(text.trim());
